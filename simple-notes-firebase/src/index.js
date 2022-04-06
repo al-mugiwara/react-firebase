@@ -6,11 +6,14 @@ import reportWebVitals from './reportWebVitals';
 import firebaseConfig from './config/firebase';
 import Login from './containers/pages/Login';
 
-console.log('config : ',firebaseConfig);
+console.log('config : ', firebaseConfig);
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    
+      <App />
+   
+
   </React.StrictMode>,
   document.getElementById('root')
 );

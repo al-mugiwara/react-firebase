@@ -11,9 +11,15 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { connect } from 'react-redux';
+import { actionUserName } from '../../../config/redux/action';
 
 
 class Login extends React.Component {
+
+    changeUser = () => {
+        this.props.changeUserName()
+    }
 
     render() {
         const theme = createTheme();
@@ -56,8 +62,8 @@ class Login extends React.Component {
 
                         </Avatar>
                         <Typography component="h1" variant="h5">
-                            Sign in
-            </Typography>
+                            Sign in {this.props.userName}
+                        </Typography>
                         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
                             <TextField
                                 margin="normal"
@@ -84,10 +90,11 @@ class Login extends React.Component {
                                 label="Remember me"
                             />
                             <Button
-                                type="submit"
+                                type="button"
                                 fullWidth
                                 variant="contained"
                                 sx={{ mt: 3, mb: 2 }}
+                                onClick={this.changeUser}
                             >
                                 Sign In
               </Button>
@@ -111,7 +118,19 @@ class Login extends React.Component {
         )
     }
 }
-export default Login;
+
+
+
+const reduxState = (state) => ({
+    popupProps: state.popup,
+    userName: state.user
+})
+
+const reduxDispatch = (dispatch) => ({
+    changeUserName: () => dispatch(actionUserName())
+})
+
+export default connect(reduxState, reduxDispatch)(Login);
 
 
 
