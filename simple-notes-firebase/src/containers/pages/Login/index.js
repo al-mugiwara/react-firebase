@@ -13,9 +13,48 @@ import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { connect } from 'react-redux';
 import { actionUserName } from '../../../config/redux/action';
+import Tombol from '../../../components/atoms/Button';
+import { LoginUserAPI } from '../../../config/redux/action';
 
 
 class Login extends React.Component {
+
+    state = {
+        formRegister: {
+            email: '',
+            password: '',
+        },
+    }
+
+    handleChangeText = (event) => {
+        let formRegisterNew = {
+            ...this.state.formRegister
+        }
+        formRegisterNew[event.target.id] = event.target.value;
+        //console.log(this.state.formRegister);
+        this.setState({
+            formRegister: formRegisterNew
+        }, () => {
+
+        })
+    }
+    handleLoginSubmit = async () => {
+        console.log(this.state.formRegister);
+        const res = await this.props.LoginAPI({ email: this.state.formRegister.email, password: this.state.formRegister.password }).catch(err => err)
+        if (res) {
+            console.log("Login Sukses")
+            this.setState({
+                formRegister: {
+                    email: '',
+                    password: '',
+
+                },
+            })
+        }else{
+            console.log("login fail")
+        }
+
+    }
 
     changeUser = () => {
         this.props.changeUserName()
@@ -25,14 +64,14 @@ class Login extends React.Component {
         const theme = createTheme();
 
 
-        const handleSubmit = (event) => {
-            event.preventDefault();
-            const data = new FormData(event.currentTarget);
-            console.log({
-                email: data.get('email'),
-                password: data.get('password'),
-            });
-        };
+        // const handleSubmit = (event) => {
+        //     event.preventDefault();
+        //     const data = new FormData(event.currentTarget);
+        //     console.log({
+        //         email: data.get('email'),
+        //         password: data.get('password'),
+        //     });
+        // };
 
         function Copyright(props) {
             return (
@@ -40,7 +79,7 @@ class Login extends React.Component {
                     {'Copyright © '}
                     <Link color="inherit" href="https://mui.com/">
                         Your Website
-            </Link>{' '}
+                    </Link>{' '}
                     {new Date().getFullYear()}
                     {'.'}
                 </Typography>
@@ -64,7 +103,8 @@ class Login extends React.Component {
                         <Typography component="h1" variant="h5">
                             Sign in {this.props.userName}
                         </Typography>
-                        <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+                        {/* onSubmit={handleSubmit} */}
+                        <Box component="form" noValidate sx={{ mt: 1 }}>
                             <TextField
                                 margin="normal"
                                 required
@@ -74,6 +114,7 @@ class Login extends React.Component {
                                 name="email"
                                 autoComplete="email"
                                 autoFocus
+                                onChange={this.handleChangeText}
                             />
                             <TextField
                                 margin="normal"
@@ -84,25 +125,20 @@ class Login extends React.Component {
                                 type="password"
                                 id="password"
                                 autoComplete="current-password"
+                                onChange={this.handleChangeText}
                             />
                             <FormControlLabel
                                 control={<Checkbox value="remember" color="primary" />}
                                 label="Remember me"
                             />
-                            <Button
-                                type="button"
-                                fullWidth
-                                variant="contained"
-                                sx={{ mt: 3, mb: 2 }}
-                                onClick={this.changeUser}
-                            >
-                                Sign In
-              </Button>
+
+                            <Tombol onClick={this.handleLoginSubmit} title="Login" loading={this.props.isLoading} />
+
                             <Grid container>
                                 <Grid item xs>
                                     <Link href="#" variant="body2">
                                         Forgot password?
-                  </Link>
+                                    </Link>
                                 </Grid>
                                 <Grid item>
                                     <Link href="#" variant="body2">
@@ -121,15 +157,21 @@ class Login extends React.Component {
 
 
 
+// const reduxState = (state) => ({
+//     popupProps: state.popup,
+//     userName: state.user
+// })
+
+// const reduxDispatch = (dispatch) => ({
+//     changeUserName: () => dispatch(actionUserName())
+// })
 const reduxState = (state) => ({
-    popupProps: state.popup,
-    userName: state.user
+    isLoading: state.isLoading
 })
 
 const reduxDispatch = (dispatch) => ({
-    changeUserName: () => dispatch(actionUserName())
+    LoginAPI: (data) => dispatch(LoginUserAPI(data))
 })
-
 export default connect(reduxState, reduxDispatch)(Login);
 
 

@@ -1,6 +1,5 @@
 import * as React from 'react';
 import Avatar from '@mui/material/Avatar';
-
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -11,18 +10,18 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import firebaseConfig from '../../../config/firebase';
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import Tombol from '../../../components/atoms/Button';
+import { registerUserAPI } from '../../../config/redux/action';
+import { connect } from 'react-redux';
 
 class Register extends React.Component {
 
     state = {
         formRegister: {
             email: '',
-            password: ''
-        }
-
+            password: '',
+           
+        },
     }
 
     handleChangeText = (event) => {
@@ -40,37 +39,15 @@ class Register extends React.Component {
 
     handleRegisterSubmit = () => {
         console.log(this.state.formRegister);
-
-        const auth = getAuth();
-        createUserWithEmailAndPassword(auth, this.state.formRegister.email, this.state.formRegister.password)
-            .then((userCredential) => {
-                // Signed in 
-                const user = userCredential.user;
-                console.log('success    : ',userCredential);
-                // ...
-            })
-            .catch((error) => {
-                const errorCode = error.code;
-                const errorMessage = error.message;
-                console.log(errorCode,errorMessage)
-                // ..
-            });
-
-
-        // firebaseConfig.auth().createUserWithEmailAndPassword(this.state.formRegister.email, this.state.formRegister.password)
-        //     .then((userCredential) => {
-        //         // Signed in 
-        //         var user = userCredential.user;
-        //         console.log('success    : ',userCredential);
-        //         // ...
-        //     })
-        //     .catch((error) => {
-        //         var errorCode = error.code;
-        //         var errorMessage = error.message;
-        //         // ..
-        //         console.log(errorCode,errorMessage)
-        //     });
-    }
+        this.props.registerAPI({email: this.state.formRegister.email,password: this.state.formRegister.password})
+        this.setState({
+            formRegister: {
+                email: '',
+                password: '',
+               
+            },
+        })
+     }
 
     render() {
         const theme = createTheme();
@@ -127,6 +104,7 @@ class Register extends React.Component {
                                 autoComplete="off"
                                 autoFocus
                                 onChange={this.handleChangeText}
+                                value={this.state.formRegister.email}
                             />
                             <TextField
                                 margin="normal"
@@ -138,13 +116,14 @@ class Register extends React.Component {
                                 id="password"
                                 autoComplete="current-password"
                                 onChange={this.handleChangeText}
+                                value={this.state.formRegister.password}
                             />
                             <FormControlLabel
                                 control={<Checkbox value="remember" color="primary" />}
                                 label="Remember me"
                             />
 
-                           <Tombol onClick={this.handleRegisterSubmit} title="Register hei" />
+                            <Tombol onClick={this.handleRegisterSubmit} title="Register hei" loading={this.props.isLoading}/>
 
 
                             <Grid container>
@@ -167,7 +146,14 @@ class Register extends React.Component {
         )
     }
 }
-export default Register;
+const reduxState = (state) => ({
+    isLoading   : state.isLoading
+})
+
+const reduxDispatch = (dispatch)    => ({
+    registerAPI: (data) => dispatch(registerUserAPI(data))
+})
+export default connect(reduxState,reduxDispatch) (Register);
 
 
 

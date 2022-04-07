@@ -1,7 +1,10 @@
+import { act } from "react-dom/test-utils"
+
 const initialState = {
-    popup   : false,
-    isLogin : false,
-    user    : 'Iku'
+    popup       : false,
+    isLogin     : false,
+    isLoading   : false,
+    user        : {}
   }
 
   const reducer = (state = initialState, action) => {
@@ -24,7 +27,15 @@ const initialState = {
           user: action.value
         }
       }
+      if(action.type === 'CHANGE_LOADING'){
+        return{
+          ...state,
+          isLoading: action.value
+        }
+      }
     return state;
   }
+
+
 
   export default reducer;
