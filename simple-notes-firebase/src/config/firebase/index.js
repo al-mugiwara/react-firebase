@@ -4,7 +4,7 @@ import {getAnalytics} from 'firebase/analytics';
 //import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 //import 'firebase/auth';
 import { getAuth } from "firebase/auth";
-import { getDatabase, ref, set } from "firebase/database";
+import { getDatabase } from "firebase/database";
 
 
 // import 'firebase/firestore';

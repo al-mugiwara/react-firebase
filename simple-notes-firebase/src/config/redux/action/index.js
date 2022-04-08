@@ -1,7 +1,6 @@
 import firebaseConfig, { database } from '../../../config/firebase';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
-import { getDatabase } from 'firebase/database';
-
+import { push, ref, set,onValue } from "firebase/database";
 
 
 export const actionUserName = () => (dispatch) => {
@@ -12,7 +11,7 @@ export const actionUserName = () => (dispatch) => {
 
 export const registerUserAPI = (data) => (dispatch) => {
 
-    return new Promise((resolve,reject) => {
+    return new Promise((resolve, reject) => {
         dispatch({ type: "CHANGE_LOADING", value: true })
         const auth = getAuth();
         return (
@@ -49,11 +48,11 @@ export const LoginUserAPI = (data) => (dispatch) => {
                     email: userCredential.user.email,
                     password: userCredential.user.uid,
                     emailVerified: userCredential.user.emailVerified,
-                    refreshToken    : userCredential.user.refreshToken,
-                    uid             : userCredential.user.uid
+                    refreshToken: userCredential.user.refreshToken,
+                    uid: userCredential.user.uid
                 }
                 // Signed in 
-                 const user = userCredential.user;
+                const user = userCredential.user;
                 console.log('success    : ', user);
                 dispatch({ type: "CHANGE_ISLOGIN", value: false })
                 dispatch({ type: "CHANGE_LOADING", value: false })
@@ -74,11 +73,37 @@ export const LoginUserAPI = (data) => (dispatch) => {
 
 }
 
-export const addDataToAPI = (data)  => (dispatch) => {
-    
-    database.push(database.ref(database,'notes/' + data.userId),{
-        title: data.title,
-        content:data.content,
-        date:data.date
+export const addDataToAPI = (data) => (dispatch) => {
+
+    push(ref(database, 'notes/' + data.userId), {
+        title   : data.title,
+        content : data.content,
+        date    : data.date
+    });
+
+    // database.push(database.ref(database,'notes/' + data.userId),{
+    //     title: data.title,
+    //     content:data.content,
+    //     date:data.date
+    // })
+}
+
+export const getDataFromAPI = (userId) => (dispatch) => {
+    const urlNotes = ref(database, 'notes/' + userId);
+    return new Promise ((resolve,reject) => {
+        onValue(urlNotes, (snapshot) => {
+            console.log('getData: ' ,snapshot.val())
+            const data = [];
+            Object.keys(snapshot.val()).map(key => {
+                data.push({
+                    id      : key,
+                    data    : snapshot.val()[key]
+                })
+            }) //untuk membuat object menjadi array
+            dispatch({ type: "SET_NOTES", value: data })
+            resolve(snapshot.val())
+          });
     })
+   
+      
 }
