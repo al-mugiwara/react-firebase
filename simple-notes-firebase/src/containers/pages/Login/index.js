@@ -15,7 +15,9 @@ import { connect } from 'react-redux';
 import { actionUserName } from '../../../config/redux/action';
 import Tombol from '../../../components/atoms/Button';
 import { LoginUserAPI } from '../../../config/redux/action';
-
+import { Navigate,useNavigate,HistoryRouterProps } from "react-router-dom";
+import { Redirect } from 'react-router';
+import Dashboard from '../Dashboard';
 
 class Login extends React.Component {
 
@@ -24,8 +26,9 @@ class Login extends React.Component {
             email: '',
             password: '',
         },
+        
     }
-
+        
     handleChangeText = (event) => {
         let formRegisterNew = {
             ...this.state.formRegister
@@ -47,9 +50,11 @@ class Login extends React.Component {
                 formRegister: {
                     email: '',
                     password: '',
-
                 },
             })
+             window.history.pushState({}, '', "/")
+             window.location.reload()
+             console.log(res);   
         }else{
             console.log("login fail")
         }

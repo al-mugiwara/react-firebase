@@ -1,5 +1,6 @@
-import firebaseConfig from '../../../config/firebase';
+import firebaseConfig, { database } from '../../../config/firebase';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { getDatabase } from 'firebase/database';
 
 
 
@@ -10,25 +11,31 @@ export const actionUserName = () => (dispatch) => {
 }
 
 export const registerUserAPI = (data) => (dispatch) => {
-    dispatch({ type: "CHANGE_LOADING", value: true })
-    const auth = getAuth();
-    return (
-        createUserWithEmailAndPassword(auth, data.email, data.password)
-            .then((userCredential) => {
-                // Signed in 
-                const user = userCredential.user;
-                console.log('success    : ', userCredential);
-                dispatch({ type: "CHANGE_LOADING", value: false })
-                // ...
-            })
-            .catch((error) => {
-                const errorCode = error.code;
-                const errorMessage = error.message;
-                console.log(errorCode, errorMessage)
-                dispatch({ type: "CHANGE_LOADING", value: false })
-                // ..
-            })
-    )
+
+    return new Promise((resolve,reject) => {
+        dispatch({ type: "CHANGE_LOADING", value: true })
+        const auth = getAuth();
+        return (
+            createUserWithEmailAndPassword(auth, data.email, data.password)
+                .then((userCredential) => {
+                    // Signed in 
+                    const user = userCredential.user;
+                    console.log('success    : ', userCredential);
+                    dispatch({ type: "CHANGE_LOADING", value: false })
+                    resolve(true)
+                    // ...
+                })
+                .catch((error) => {
+                    const errorCode = error.code;
+                    const errorMessage = error.message;
+                    console.log(errorCode, errorMessage)
+                    dispatch({ type: "CHANGE_LOADING", value: false })
+                    reject(false)
+                    // ..
+                })
+        )
+    })
+
 }
 
 export const LoginUserAPI = (data) => (dispatch) => {
@@ -39,17 +46,19 @@ export const LoginUserAPI = (data) => (dispatch) => {
         signInWithEmailAndPassword(auth, data.email, data.password)
             .then((userCredential) => {
                 const dataUser = {
-                    email: userCredential.email,
-                    password: userCredential.uid,
-                    emailVerified: userCredential.emailVerified
+                    email: userCredential.user.email,
+                    password: userCredential.user.uid,
+                    emailVerified: userCredential.user.emailVerified,
+                    refreshToken    : userCredential.user.refreshToken,
+                    uid             : userCredential.user.uid
                 }
                 // Signed in 
-                const user = userCredential.user;
-                console.log('success    : ', userCredential);
+                 const user = userCredential.user;
+                console.log('success    : ', user);
                 dispatch({ type: "CHANGE_ISLOGIN", value: false })
                 dispatch({ type: "CHANGE_LOADING", value: false })
                 dispatch({ type: "CHANGE_USER", value: dataUser })
-                resolve(true)
+                resolve(dataUser)
                 // ...
             })
             .catch((error) => {
@@ -63,4 +72,13 @@ export const LoginUserAPI = (data) => (dispatch) => {
     })
 
 
+}
+
+export const addDataToAPI = (data)  => (dispatch) => {
+    
+    database.push(database.ref(database,'notes/' + data.userId),{
+        title: data.title,
+        content:data.content,
+        date:data.date
+    })
 }

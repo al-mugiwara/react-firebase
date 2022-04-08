@@ -37,16 +37,21 @@ class Register extends React.Component {
         })
     }
 
-    handleRegisterSubmit = () => {
+    handleRegisterSubmit = async () => {
         console.log(this.state.formRegister);
-        this.props.registerAPI({email: this.state.formRegister.email,password: this.state.formRegister.password})
-        this.setState({
-            formRegister: {
-                email: '',
-                password: '',
-               
-            },
-        })
+       const res = await this.props.registerAPI({email: this.state.formRegister.email,password: this.state.formRegister.password}).catch(err =>err);
+        if(res){
+            this.setState({
+                formRegister: {
+                    email: '',
+                    password: '',
+                   
+                },
+            })
+        }else{
+            console.log("register failed")
+        }
+        
      }
 
     render() {

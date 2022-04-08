@@ -21,12 +21,24 @@ import * as React from 'react';
 import Link from '@mui/material/Link';
 import { Provider } from 'react-redux';
 import { store } from '../../../config/redux';
+import { red } from '@mui/material/colors';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+
+
 
 function App() {
   const pages = ['Login', 'Dashboard', 'Register'];
   const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
+  const theme = createTheme({
+    palette: {
+      primary: {
+        main: red[500],
+      },
+    },
+  });
+  
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
@@ -46,6 +58,7 @@ function App() {
   return (
     <Provider store={store}>
       <Fragment>
+      <ThemeProvider theme={theme}>
         <AppBar position="static">
           <Container maxWidth="xl">
             <Toolbar disableGutters>
@@ -104,11 +117,12 @@ function App() {
           </Typography>
               <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
                 <BrowserRouter>
-                  <Link href="/login" underline="none" color="inherit">
+                  <Link href="/login"  underline="none" color="inherit">
                     <Button
                       sx={{ my: 2, color: 'white', display: 'block' }}>
                       Login
                 </Button>
+                
                   </Link>
                   <Link href="/" underline="none" color="inherit">
                     <Button
@@ -156,6 +170,7 @@ function App() {
             </Toolbar>
           </Container>
         </AppBar>
+        </ThemeProvider>
         <BrowserRouter>
           <Routes>
             <Route path="/" exact element={<Dashboard />}></Route>
